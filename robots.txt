@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://lupamarketingbr-coder.github.io/site-lupa/sitemap.xml
