@@ -7,7 +7,9 @@ document.querySelectorAll('.lead-form').forEach(form=>form.addEventListener('sub
  const button=form.querySelector('button[type="submit"]'),success=form.querySelector('.success'),error=form.querySelector('.error');
  const label=button.textContent;button.disabled=true;button.textContent='Enviando…';success.hidden=true;error.hidden=true;
  const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),20000);
- try{const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'},signal:controller.signal});const result=await response.json();if(!response.ok||result.success!==true)throw new Error('Envio não confirmado');success.hidden=false;form.reset();success.scrollIntoView({behavior:'smooth',block:'center'});}
+ try{const fields=new FormData(form);let body=fields,headers={Accept:'application/json'};
+ if(form.dataset.redeIntake==='true'){const data=Object.fromEntries(fields);data.adult_confirmed=fields.get('adult_confirmed')==='on';data.privacy_accepted=fields.get('privacy_accepted')==='on';data.experience=('Canal: '+(data.channel||'Não informado')+'\n'+(data.experience||'')).slice(0,2000);body=JSON.stringify(data);headers['Content-Type']='application/json';}
+ const response=await fetch(form.action,{method:'POST',body,headers,signal:controller.signal});const result=await response.json();if(!response.ok||result.success!==true)throw new Error('Envio não confirmado');success.hidden=false;form.reset();success.scrollIntoView({behavior:'smooth',block:'center'});}
  catch{error.hidden=false;error.scrollIntoView({behavior:'smooth',block:'center'});}
  finally{clearTimeout(timeout);button.disabled=false;button.textContent=label;}
 }));
